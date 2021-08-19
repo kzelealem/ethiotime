@@ -1,7 +1,6 @@
 package ethiopiandate
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -133,9 +132,6 @@ func (t Time) Weekday() Weekday {
 }
 
 func (t Time) String() string {
-	y, m, d := t.date()
-	wd := t.Weekday()
-	hh, mm, _ := t.Clock()
 
-	return fmt.Sprintf("%v:%v, %v, %v %v, %v", hh, mm, wd, m, d, y)
+	return t.Format("January 02, 2006 05:04")
 }

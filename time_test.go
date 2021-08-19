@@ -59,3 +59,22 @@ func TestTime_clock(t *testing.T) {
 		})
 	}
 }
+
+func TestTime_String(t *testing.T) {
+	tr := Now()
+	tests := []struct {
+		name string
+		tr   Time
+		want string
+	}{
+		// TODO: Add test cases.
+		{"string", tr, ""},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.tr.String(); got != tt.want {
+				t.Errorf("Time.String() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
