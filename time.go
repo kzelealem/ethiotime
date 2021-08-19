@@ -106,9 +106,6 @@ func (t Time) clock() (hh int, mm int, ss int) {
 	hh, mm, ss = t.t.Clock()
 
 	hh = hh - 6
-	if hh > 12 {
-		hh = hh - 12
-	}
 
 	if hh < 0 {
 		hh = -hh
