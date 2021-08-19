@@ -1,13 +1,16 @@
 package ethiopiandate
 
 import (
+	"log"
 	"testing"
 	"time"
 )
 
 func TestTime_Format(t *testing.T) {
-	tt := time.Now().Add(time.Hour * -12)
+	tt := time.Now().Add(time.Hour*-11 + time.Minute*-2)
 	ett := Date(tt)
+	h, m, s := ett.Clock()
+	log.Println("Date", h, m, s)
 	et := Now()
 	type args struct {
 		layout string

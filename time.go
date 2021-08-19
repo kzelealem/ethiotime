@@ -103,12 +103,11 @@ func (t Time) Clock() (hh int, mm int, ss int) {
 }
 
 func (t Time) clock() (hh int, mm int, ss int) {
-	hh, mm, ss = t.t.Clock()
+	hh, mm, ss = t.t.Hour(), t.t.Minute(), t.t.Second()
 
 	hh = hh - 6
-
 	if hh < 0 {
-		hh = -hh
+		hh = 24 + hh
 	}
 
 	return

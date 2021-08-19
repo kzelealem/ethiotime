@@ -116,16 +116,16 @@ func (t Time) AppendFormat(b []byte, layout string) []byte {
 		case stdZeroSecond:
 			b = appendInt(b, sec, 2)
 		case stdPM:
-			if hour >= 12 {
-				b = append(b, "ማታ"...)
-			} else {
-				b = append(b, "ቀን"...)
-			}
+			fallthrough
 		case stdpm:
-			if hour >= 12 {
+			if hour >= 18 && hour < 24 {
+				b = append(b, "ለሊት"...)
+			} else if hour >= 12 && hour < 18 {
 				b = append(b, "ማታ"...)
-			} else {
-				b = append(b, "ቀን"...)
+			} else if hour >= 6 && hour < 12 {
+				b = append(b, "ከሰአት"...)
+			} else if hour >= 0 && hour < 6 {
+				b = append(b, "ጠዋት"...)
 			}
 
 		}
