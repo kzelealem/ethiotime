@@ -110,6 +110,10 @@ func (t Time) clock() (hh int, mm int, ss int) {
 		hh = hh - 12
 	}
 
+	if hh < 0 {
+		hh = -hh
+	}
+
 	return
 }
 
