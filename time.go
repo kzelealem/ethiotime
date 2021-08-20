@@ -48,13 +48,13 @@ func (m Month) String() string {
 type Weekday int
 
 const (
-	Sunday Weekday = iota
-	Monday
+	Monday Weekday = iota + 1
 	Tuesday
 	Wednesday
 	Thursday
 	Friday
 	Saturday
+	Sunday
 )
 
 // String returns the English name of the day ("Sunday", "Monday", ...).
