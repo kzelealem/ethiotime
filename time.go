@@ -48,13 +48,13 @@ func (m Month) String() string {
 type Weekday int
 
 const (
-	Monday Weekday = iota + 1
+	Sunday Weekday = iota
+	Monday
 	Tuesday
 	Wednesday
 	Thursday
 	Friday
 	Saturday
-	Sunday
 )
 
 // String returns the English name of the day ("Sunday", "Monday", ...).
@@ -126,9 +126,13 @@ func gregToJDN(tm time.Time) (int, error) {
 }
 
 func (t Time) Weekday() Weekday {
-	wd := (t.jdn % 7)
+	wd := (t.jdn % 7) + 1
 
-	return Weekday(wd + 1)
+	if wd == 7 {
+		wd = 0
+	}
+
+	return Weekday(wd)
 }
 
 func (t Time) String() string {
