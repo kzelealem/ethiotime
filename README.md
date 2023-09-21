@@ -10,7 +10,7 @@ go get github.com/Kzelealem/ethiotime
 
 # 📖 Usage
 ## 1. Importing the package
-```
+``` go
 import (
   ethiotime "github.com/Kzelealem/ethiotime"
 )
@@ -25,14 +25,14 @@ t := ethiotime.Now()
 
 ## 3. Converting from GoLang's time.Time
 If you have an existing GoLang time.Time instance and you'd like to convert it:
-```
+``` go
 tt := time.Now()
 et := ethiotime.Date(tt)
 ```
 
 ## Formatting to Ethiopian Time String
 Customize your date format using standard layout strings:
-```
+``` go
 formattedTime := t.Format("January 01, 2006 03:04 PM")
 fmt.Println(formattedTime)
 ```
