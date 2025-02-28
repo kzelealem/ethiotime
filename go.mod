@@ -1,3 +1,3 @@
-module github.com/Kzelealem/ethiotime
+module github.com/kzelealem/ethiotime
 
-go 1.16
+go 1.22

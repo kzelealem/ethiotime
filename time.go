@@ -1,7 +1,13 @@
 package ethiopiandate
 
 import (
+	"errors"
+	"fmt"
 	"time"
+)
+
+var (
+	ErrInvalidDate = errors.New("invalid ethiopian date")
 )
 
 const (
@@ -10,9 +16,10 @@ const (
 	julianOffsetGreg = 1721426
 )
 
+// Time represents an Ethiopian calendar date and time.
 type Time struct {
-	jdn int
-	t   time.Time
+	jdn int       // Julian Day Number
+	t   time.Time // Gregorian calendar equivalent
 }
 
 // A Month specifies a month of the year (September = 1, ...).
@@ -39,9 +46,7 @@ func (m Month) String() string {
 	if Meskerem <= m && m <= Pagumen {
 		return longMonthNames[m-1]
 	}
-	buf := make([]byte, 20)
-	n := fmtInt(buf, uint64(m))
-	return "%!Month(" + string(buf[n:]) + ")"
+	return fmt.Sprintf("%%!Month(%d)", m)
 }
 
 // A Weekday specifies a day of the week (Sunday = 0, ...).
@@ -57,26 +62,29 @@ const (
 	Saturday
 )
 
-// String returns the English name of the day ("Sunday", "Monday", ...).
+// String returns the Amharic name of the day ("እሁድ", "ሰኞ", ...).
 func (d Weekday) String() string {
 	if Sunday <= d && d <= Saturday {
 		return longDayNames[d]
 	}
-	buf := make([]byte, 20)
-	n := fmtInt(buf, uint64(d))
-	return "%!Weekday(" + string(buf[n:]) + ")"
+	return fmt.Sprintf("%%!Weekday(%d)", d)
 }
 
+// Now returns the current local time in Ethiopian calendar.
 func Now() Time {
-	now := time.Now()
-	return Date(now)
+	return Date(time.Now())
 }
 
+// Date converts a Gregorian time.Time to Ethiopian Time.
 func Date(t time.Time) Time {
-	jdn, _ := gregToJDN(t)
+	jdn, err := gregToJDN(t)
+	if err != nil {
+		panic(err) // Maintain compatibility while adding error handling
+	}
 	return Time{jdn, t}
 }
 
+// date returns the Ethiopian year, month, and day.
 func (t Time) date() (y int, m Month, d int) {
 	var n, j, r int
 
@@ -92,15 +100,19 @@ func (t Time) date() (y int, m Month, d int) {
 	return
 }
 
+// GetGregorian returns the Gregorian calendar equivalent.
 func (t Time) GetGregorian() time.Time {
 	return t.t
 }
 
+// Clock returns the hour, minute, and second within the day.
+// The returned values are based on Ethiopian time (6 hours behind UTC).
 func (t Time) Clock() (hh int, mm int, ss int) {
 	hh, mm, ss = t.clock()
 	return
 }
 
+// clock is an internal method that handles the Ethiopian time conversion.
 func (t Time) clock() (hh int, mm int, ss int) {
 	hh, mm, ss = t.t.Hour(), t.t.Minute(), t.t.Second()
 
@@ -112,6 +124,7 @@ func (t Time) clock() (hh int, mm int, ss int) {
 	return
 }
 
+// gregToJDN converts a Gregorian date to Julian Day Number.
 func gregToJDN(tm time.Time) (int, error) {
 	var s, t, n, j int
 	year, m, day := tm.Date()
@@ -125,6 +138,7 @@ func gregToJDN(tm time.Time) (int, error) {
 	return j, nil
 }
 
+// Weekday returns the day of the week specified by t.
 func (t Time) Weekday() Weekday {
 	wd := (t.jdn % 7) + 1
 
@@ -135,7 +149,8 @@ func (t Time) Weekday() Weekday {
 	return Weekday(wd)
 }
 
+// String returns the time formatted using the default format.
 func (t Time) String() string {
-
-	return t.Format("January 02, 2006 05:04")
+	hh, mm, _ := t.clock()
+	return t.Format("January 02, 2006") + fmt.Sprintf(" %02d:%02d", hh, mm)
 }

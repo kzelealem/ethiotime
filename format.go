@@ -1,25 +1,21 @@
 package ethiopiandate
 
+import "strings"
+
+// Format returns a textual representation of the time value formatted according
+// to the layout provided. The layout defines the format by showing how a
+// reference time would be formatted.
 func (t Time) Format(layout string) string {
-	const bufSize = 64
-	var b []byte
-	max := len(layout) + 10
-	if max < bufSize {
-		var buf [bufSize]byte
-		b = buf[:0]
-	} else {
-		b = make([]byte, 0, max)
-	}
-	b = t.AppendFormat(b, layout)
-	return string(b)
+	var b strings.Builder
+	b.Grow(len(layout) + 10) // Pre-allocate space for efficiency
+	b.Write(t.AppendFormat(nil, layout))
+	return b.String()
 }
 
 // AppendFormat is like Format but appends the textual
 // representation to b and returns the extended buffer.
 func (t Time) AppendFormat(b []byte, layout string) []byte {
 	var (
-		// name, offset, abs = t.locabs()
-
 		year  int = -1
 		month Month
 		day   int
@@ -28,6 +24,7 @@ func (t Time) AppendFormat(b []byte, layout string) []byte {
 		min   int
 		sec   int
 	)
+
 	// Each iteration generates one std value.
 	for layout != "" {
 		prefix, std, suffix := nextStdChunk(layout)
@@ -115,22 +112,25 @@ func (t Time) AppendFormat(b []byte, layout string) []byte {
 			b = appendInt(b, sec, 0)
 		case stdZeroSecond:
 			b = appendInt(b, sec, 2)
-		case stdPM:
-			fallthrough
-		case stdpm:
-			if hour >= 18 && hour < 24 {
-				b = append(b, "ለሊት"...)
-			} else if hour >= 12 && hour < 18 {
-				b = append(b, "ማታ"...)
-			} else if hour >= 6 && hour < 12 {
-				b = append(b, "ከሰአት"...)
-			} else if hour >= 0 && hour < 6 {
-				b = append(b, "ጠዋት"...)
-			}
-
+		case stdPM, stdpm:
+			b = append(b, getTimePeriod(hour)...)
 		}
 	}
 	return b
+}
+
+// getTimePeriod returns the appropriate Amharic time period based on the hour
+func getTimePeriod(hour int) string {
+	switch {
+	case hour >= 18 && hour < 24:
+		return "ለሊት"
+	case hour >= 12 && hour < 18:
+		return "ማታ"
+	case hour >= 6 && hour < 12:
+		return "ከሰአት"
+	default: // hour >= 0 && hour < 6
+		return "ጠዋት"
+	}
 }
 
 // nextStdChunk finds the first occurrence of a std string in
